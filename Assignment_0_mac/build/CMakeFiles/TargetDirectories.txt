@@ -1,0 +1,4 @@
+/Users/user/Desktop/Graphics/Assignment_0_code/Assignment_0_mac/build/CMakeFiles/GLAD.dir
+/Users/user/Desktop/Graphics/Assignment_0_code/Assignment_0_mac/build/CMakeFiles/Assignment_0.dir
+/Users/user/Desktop/Graphics/Assignment_0_code/Assignment_0_mac/build/CMakeFiles/edit_cache.dir
+/Users/user/Desktop/Graphics/Assignment_0_code/Assignment_0_mac/build/CMakeFiles/rebuild_cache.dir
