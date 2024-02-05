@@ -102,7 +102,7 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
     // load file
     string fileContents;
    
-    ifstream file("../data/tetrahedron.obj");
+    ifstream file("../data/garg.obj");
     if(!file.is_open()){
         cout << "Error opening OBJ file" << endl;
         return 0;
@@ -111,8 +111,13 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
     // append line with \n
     string tempLine;
     while(getline(file, tempLine)){
-        fileContents += tempLine;
-        fileContents += "\n";
+        // cout << tempLine;
+        // check if format is roughly correct
+        if(tempLine[0] == 'v' || tempLine[0] == 'f'){
+            // cout << tempLine << endl;
+            fileContents += tempLine;
+            fileContents += "\n";
+        }
     }
     
     // temp - to store normals (vn)
@@ -130,7 +135,7 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
 
     // STEP 1 - get complete face list and normal list first
     while(getline(fileStream, line, '\n')){
-        cout << line << endl;
+        // cout << line << endl;
 
         // get the substrings (each element inside the line) first
         istringstream lineStream(line);
@@ -157,25 +162,49 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
         // store face list (triList) and complete face list (completeFaceList)
         // store faces (first index of each substring) into triList
         else if(substrings[0] == "f"){
-            if (substrings.size() >= 4) {
+            
+            // split substrings into sth like "f 123/122/121 123/122/121 123/122/121" (excluding 'f' cuz i starts from 1)
+            for(int i=1; i < substrings.size(); i++){
+                istringstream substringsStream(substrings[i]);
+                string element;
+                vector<float> elementList;
+
+                // contains the "123/122/121"
+                while(getline(substringsStream, element, '/')){
+                    // elementList now contains individual 123, 122, 121
+                    try {
+                        // cout << element << endl;
+                        elementList.push_back(stof(element));
+                    } 
+                    catch (const std::invalid_argument& e) {
+                        cerr << "Invalid argument: " << element << endl;
+                        return 0;
+                    }
+                }
+
+                // cout << endl << "Element list: ";
+                // for (const auto& element : elementList) {
+                //     cout << element << " ";
+                // }
+
                 // put only the first element into triList. (converts char to float, -1 because OpenGL starts from index 0)
-                triList.push_back(static_cast<float>(substrings[1][0] - '1'));
-                triList.push_back(static_cast<float>(substrings[2][0] - '1'));
-                triList.push_back(static_cast<float>(substrings[3][0] - '1'));
+                // cout << elementList[0] << endl;
+                triList.push_back(elementList[0] - 1);
                 
-                // put first and third/last element inside completeFaceList (vertex index and normal index) ex: f 1/0/4 3/0/2 2/0/1 (third element = 4th index)
-                completeFaceList.push_back(static_cast<float>(substrings[1][0] - '1')); // x - vertex index
-                completeFaceList.push_back(static_cast<float>(substrings[1][4] - '1')); // x - normal index
+                // put first and third/last element inside completeFaceList (vertex index and normal index)
+                completeFaceList.push_back(elementList[0] - 1); // vertex index
+                completeFaceList.push_back(elementList[2] - 1); // normal index
 
-                completeFaceList.push_back(static_cast<float>(substrings[2][0] - '1')); // y - vertex index
-                completeFaceList.push_back(static_cast<float>(substrings[2][4] - '1')); // y - normal index
-
-                completeFaceList.push_back(static_cast<float>(substrings[3][0] - '1')); // z - vertex index
-                completeFaceList.push_back(static_cast<float>(substrings[3][4] - '1')); // z - normal index
             }
+                
         }
 
     }
+
+    // cout << "Complete face list: ";
+    // for (const auto& element : completeFaceList) {
+    //     cout << element << " ";
+    // }
 
     // STEP 2 - create an indexList to store index of normal as a value, which corresponds to the index of the vertex as the array's index idk how to explain...
     
@@ -183,7 +212,10 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
     vector<float> indexList;
 
     for(int x = 0; x < completeFaceList.size()-1; x+=2){
+        // remember we only store index and normal index here (ignore texture index)
+        
         int vertex = static_cast<int>(completeFaceList[x]); // vertex index
+
         int normal = static_cast<int>(completeFaceList[x+1]); // vertex normal
 
         // resize if indexList isn't large enough
@@ -194,42 +226,49 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
         indexList[vertex] = normal;
     }
 
-    cout << "Complete face list: ";
-    for (const auto& element : completeFaceList) {
-        cout << element << " ";
-    }
+    // string filePath = "output.txt";
+    // string outputFileContents;
+    // ofstream outputFile(filePath);
+    // if (outputFile.is_open()) {
+    //     for(int x=0; x<completeFaceList.size(); x++){
+    //         outputFileContents += completeFaceList[x];
+    //     }
+    //     outputFile << outputFileContents;
+    //     outputFile.close();
+    //     std::cout << "String exported to file: " << filePath << endl;
+    // } else {
+    //     std::cerr << "Error opening file: " << filePath << endl;
+    // }
 
-    cout << endl << "Normal list: ";
-    for (const auto& element : normalList) {
-        cout << element << " ";
-    }
+    
 
-    cout << endl << "Index list: ";
-    for (const auto& element : indexList) {
-        cout << element << " ";
-    }
+    // cout << endl << "Normal list: ";
+    // for (const auto& element : normalList) {
+    //     cout << element << " ";
+    // }
 
-    cout << endl << "Just vertex list: ";
-    for (const auto& element : justVertexList) {
-        cout << element << " ";
-    }
+    // cout << endl << "Index list: ";
+    // for (const auto& element : indexList) {
+    //     cout << element << " ";
+    // }
+
+    // cout << endl << "Just vertex list: ";
+    // for (const auto& element : justVertexList) {
+    //     cout << element << " ";
+    // }
 
     // STEP 3 - combine and store justVertexList and normalList into verList
     
     // assume number of normals is the same as number of vertices
     int indexCount = 0;
     for(int x=0; x < justVertexList.size()-2; x+=3){
-        cout << endl << "x: " << x;
+        // cout << endl << "x: " << x;
         // store just vertices
         verList.push_back(justVertexList[x]); // vertex x
         verList.push_back(justVertexList[x+1]); // vertex y
         verList.push_back(justVertexList[x+2]); // vertex z
 
         // store normals
-        // cout << endl << "index list x: " << indexList[indexCount];
-        // cout << endl << "normalList at indexCount: " << normalList[indexList[indexCount]*3];
-        // cout << endl << "normalList at indexCount: " << normalList[indexList[indexCount]*3+1];
-        // cout << endl << "normalList at indexCount: " << normalList[indexList[indexCount]*3+2];
         verList.push_back(normalList[indexList[indexCount]*3]); // normal x
         verList.push_back(normalList[indexList[indexCount]*3+1]); // normal y
         verList.push_back(normalList[indexList[indexCount]*3+2]); // normal z
@@ -237,15 +276,15 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
         indexCount += 1;
     }
 
-    cout << endl << "verList: ";
-    for (const auto& element : verList) {
-        cout << element << " ";
-    }
+    // cout << endl << "verList: ";
+    // for (const auto& element : verList) {
+    //     cout << element << " ";
+    // }
 
-    std::cout << endl << "triList: ";
-    for (const auto& element : triList) {
-        std::cout << element << " ";
-    }
+    // cout << endl << "triList: ";
+    // for (const auto& element : triList) {
+    //     cout << element << " ";
+    // }
 
     file.close();
 
