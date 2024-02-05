@@ -98,10 +98,79 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 //       2) store vertex indices of each triangle in triList 
 int LoadInput(vector<float> &verList, vector<unsigned> &triList)
 {
+    cout << "Hello World!" << endl;
+
+    string fileContents;
+
+    ifstream file("../data/tetrahedron.obj");
+    if(!file.is_open()){
+        cout << "Error opening OBJ file" << endl;
+        return 0;
+    }
+
+    string tempLine;
+    while(getline(file, tempLine)){
+        fileContents += tempLine;
+        fileContents += "\n";
+    }
+
+    // turn fileContents into stream fileStream
+    istringstream fileStream(fileContents);
+
+    vector<string> substrings;
+    string line;
+
+    while(getline(fileStream, line, '\n')){
+        cout << line << endl;
+        istringstream lineStream(line);
+
+        string substring;
+        vector<string> substrings;
+        while(getline(lineStream, substring, ' ')){
+            substrings.push_back(substring);
+        }
+
+        // for (const auto& element : substrings) {
+        //     std::cout << element << endl;
+        // }
+
+        // store vertices of triangle in verList
+        if(substrings[0] == "v"){
+            // convert to float using stof
+            verList.push_back(stof(substrings[1])); //x
+            verList.push_back(stof(substrings[2])); //y
+            verList.push_back(stof(substrings[3])); //z
+        }
+
+        // store faces (first index of each substring) into triList
+        if(substrings[0] == "f"){
+            // convert char to float
+            triList.push_back(static_cast<float>(substrings[1][0] - '0'));
+            triList.push_back(static_cast<float>(substrings[2][0] - '0'));
+            triList.push_back(static_cast<float>(substrings[3][0] - '0'));
+        }
+
+    }
+
+    file.close();
+
+    std::cout << "verList: ";
+    for (const auto& element : verList) {
+        std::cout << element << " ";
+    }
+
+    std::cout << "triList: ";
+    for (const auto& element : triList) {
+        std::cout << element << " ";
+    }
+
+    // Add a newline at the end
+    std::cout << std::endl;
+
     // Note: these two lines of code is to avoid runtime error; 
     //       please remove them after you fill your own code for 3D model loading
-    verList.push_back(0); 
-    triList.push_back(0);
+    // verList.push_back(0); 
+    // triList.push_back(0);
     
     return 0;
 }
