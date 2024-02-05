@@ -98,74 +98,156 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 //       2) store vertex indices of each triangle in triList 
 int LoadInput(vector<float> &verList, vector<unsigned> &triList)
 {
-    cout << "Hello World!" << endl;
-
+    // STEP 0 - load OBJ file
+    // load file
     string fileContents;
-
+   
     ifstream file("../data/tetrahedron.obj");
     if(!file.is_open()){
         cout << "Error opening OBJ file" << endl;
         return 0;
     }
 
+    // append line with \n
     string tempLine;
     while(getline(file, tempLine)){
         fileContents += tempLine;
         fileContents += "\n";
     }
+    
+    // temp - to store normals (vn)
+    vector<float> normalList;
+
+    // temp - to store complete face list
+    vector<float> completeFaceList;
+
+    // temp - to store JUST vertices list
+    vector<float> justVertexList;
 
     // turn fileContents into stream fileStream
-    istringstream fileStream(fileContents);
-
-    vector<string> substrings;
+    istringstream fileStream(fileContents); 
     string line;
 
+    // STEP 1 - get complete face list and normal list first
     while(getline(fileStream, line, '\n')){
         cout << line << endl;
-        istringstream lineStream(line);
 
-        string substring;
+        // get the substrings (each element inside the line) first
+        istringstream lineStream(line);
         vector<string> substrings;
+        string substring;
         while(getline(lineStream, substring, ' ')){
             substrings.push_back(substring);
         }
 
-        // for (const auto& element : substrings) {
-        //     std::cout << element << endl;
-        // }
-
-        // store vertices of triangle in verList
+        // store just vertices in justVertexList
         if(substrings[0] == "v"){
-            // convert to float using stof
-            verList.push_back(stof(substrings[1])); //x
-            verList.push_back(stof(substrings[2])); //y
-            verList.push_back(stof(substrings[3])); //z
+            justVertexList.push_back(stof(substrings[1])); // x
+            justVertexList.push_back(stof(substrings[2])); // y
+            justVertexList.push_back(stof(substrings[3])); // z
         }
 
+        // store normals in normalList
+        else if(substrings[0] == "vn"){
+            normalList.push_back(stof(substrings[1])); // x
+            normalList.push_back(stof(substrings[2])); // y
+            normalList.push_back(stof(substrings[3])); // z
+        }
+
+        // store face list (triList) and complete face list (completeFaceList)
         // store faces (first index of each substring) into triList
-        if(substrings[0] == "f"){
-            // convert char to float
-            triList.push_back(static_cast<float>(substrings[1][0] - '0'));
-            triList.push_back(static_cast<float>(substrings[2][0] - '0'));
-            triList.push_back(static_cast<float>(substrings[3][0] - '0'));
+        else if(substrings[0] == "f"){
+            if (substrings.size() >= 4) {
+                // put only the first element into triList. (converts char to float, -1 because OpenGL starts from index 0)
+                triList.push_back(static_cast<float>(substrings[1][0] - '1'));
+                triList.push_back(static_cast<float>(substrings[2][0] - '1'));
+                triList.push_back(static_cast<float>(substrings[3][0] - '1'));
+                
+                // put first and third/last element inside completeFaceList (vertex index and normal index) ex: f 1/0/4 3/0/2 2/0/1 (third element = 4th index)
+                completeFaceList.push_back(static_cast<float>(substrings[1][0] - '1')); // x - vertex index
+                completeFaceList.push_back(static_cast<float>(substrings[1][4] - '1')); // x - normal index
+
+                completeFaceList.push_back(static_cast<float>(substrings[2][0] - '1')); // y - vertex index
+                completeFaceList.push_back(static_cast<float>(substrings[2][4] - '1')); // y - normal index
+
+                completeFaceList.push_back(static_cast<float>(substrings[3][0] - '1')); // z - vertex index
+                completeFaceList.push_back(static_cast<float>(substrings[3][4] - '1')); // z - normal index
+            }
         }
 
     }
 
-    file.close();
+    // STEP 2 - create an indexList to store index of normal as a value, which corresponds to the index of the vertex as the array's index idk how to explain...
+    
+    // temp - to store [index_of_vertex, index_of_normal]
+    vector<float> indexList;
 
-    std::cout << "verList: ";
-    for (const auto& element : verList) {
-        std::cout << element << " ";
+    for(int x = 0; x < completeFaceList.size()-1; x+=2){
+        int vertex = static_cast<int>(completeFaceList[x]); // vertex index
+        int normal = static_cast<int>(completeFaceList[x+1]); // vertex normal
+
+        // resize if indexList isn't large enough
+        if (vertex >= static_cast<int>(indexList.size())) {
+            indexList.resize(vertex + 1);
+        }
+
+        indexList[vertex] = normal;
     }
 
-    std::cout << "triList: ";
+    cout << "Complete face list: ";
+    for (const auto& element : completeFaceList) {
+        cout << element << " ";
+    }
+
+    cout << endl << "Normal list: ";
+    for (const auto& element : normalList) {
+        cout << element << " ";
+    }
+
+    cout << endl << "Index list: ";
+    for (const auto& element : indexList) {
+        cout << element << " ";
+    }
+
+    cout << endl << "Just vertex list: ";
+    for (const auto& element : justVertexList) {
+        cout << element << " ";
+    }
+
+    // STEP 3 - combine and store justVertexList and normalList into verList
+    
+    // assume number of normals is the same as number of vertices
+    int indexCount = 0;
+    for(int x=0; x < justVertexList.size()-2; x+=3){
+        cout << endl << "x: " << x;
+        // store just vertices
+        verList.push_back(justVertexList[x]); // vertex x
+        verList.push_back(justVertexList[x+1]); // vertex y
+        verList.push_back(justVertexList[x+2]); // vertex z
+
+        // store normals
+        // cout << endl << "index list x: " << indexList[indexCount];
+        // cout << endl << "normalList at indexCount: " << normalList[indexList[indexCount]*3];
+        // cout << endl << "normalList at indexCount: " << normalList[indexList[indexCount]*3+1];
+        // cout << endl << "normalList at indexCount: " << normalList[indexList[indexCount]*3+2];
+        verList.push_back(normalList[indexList[indexCount]*3]); // normal x
+        verList.push_back(normalList[indexList[indexCount]*3+1]); // normal y
+        verList.push_back(normalList[indexList[indexCount]*3+2]); // normal z
+
+        indexCount += 1;
+    }
+
+    cout << endl << "verList: ";
+    for (const auto& element : verList) {
+        cout << element << " ";
+    }
+
+    std::cout << endl << "triList: ";
     for (const auto& element : triList) {
         std::cout << element << " ";
     }
 
-    // Add a newline at the end
-    std::cout << std::endl;
+    file.close();
 
     // Note: these two lines of code is to avoid runtime error; 
     //       please remove them after you fill your own code for 3D model loading
