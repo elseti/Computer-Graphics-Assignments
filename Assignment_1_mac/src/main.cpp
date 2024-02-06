@@ -58,7 +58,7 @@ bool leftMouseButtonHold = false;
 bool isFirstMouse = true;
 float prevMouseX;
 float prevMouseY;
- glm::mat4 modelMatrix = glm::mat4(1.0f);
+glm::mat4 modelMatrix = glm::mat4(1.0f);
 
  // Mesh color table
 glm::vec3 colorTable[4] = 
@@ -301,7 +301,6 @@ void SetMeshColor(int &colorID)
 
     // swap colours in colorTable whenever "C" is pressed
     int colorTableSize = sizeof(colorTable) / sizeof(colorTable[0]);
-    cout << colorTableSize << endl;
 
     for(int x=0; x < colorTableSize - 1; x++){
         colorTable[x] = colorTable[x+1];
@@ -324,7 +323,27 @@ void TranslateModel(glm::vec3 transVec)
 // TODO: insert your code in this function for Mesh Transformation (Scaling)
 void ScaleModel(float scale)
 {
-    
+    /*
+     * make a:
+     * sx 0 0 0
+     * 0 sy 0 0
+     * 0 0 sz 0
+     * 0 0 0 1
+     */
+    glm::mat4 scaleMatrix = glm::mat4(scale);
+    scaleMatrix[3][3] = 1.0f;
+    modelMatrix = modelMatrix * scaleMatrix;
+
+    // for (int i = 0; i < 4; ++i) {
+    //     for (int j = 0; j < 4; ++j) {
+    //         std::cout << scaleMatrix[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+
+    // Alternative method: (using glm::scale)
+    // glm::vec3 scaleVector(scale);
+    // modelMatrix = glm::scale(modelMatrix, scaleVector);
 }
 
 
