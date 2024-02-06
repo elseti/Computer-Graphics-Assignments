@@ -102,7 +102,7 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
     // load file
     string fileContents;
    
-    ifstream file("../data/garg.obj");
+    ifstream file("../data/sphere.obj");
     if(!file.is_open()){
         cout << "Error opening OBJ file" << endl;
         return 0;
@@ -196,9 +196,8 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
                 completeFaceList.push_back(elementList[2] - 1); // normal index
 
             }
-                
-        }
 
+        }
     }
 
     // cout << "Complete face list: ";
@@ -239,8 +238,6 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
     // } else {
     //     std::cerr << "Error opening file: " << filePath << endl;
     // }
-
-    
 
     // cout << endl << "Normal list: ";
     // for (const auto& element : normalList) {
@@ -299,7 +296,14 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
 // TODO: insert your code in this function for Mesh Coloring
 void SetMeshColor(int &colorID)
 {
-   
+    // glUniform3fv(glGetUniformLocation(myShader.ID, "meshColor"), 1, &colorTable[colorID][0]);
+    glm::vec3 swapColor = colorTable[colorID];
+
+    // hardcoded swapping colours based on the length of colorTable (4)
+    for(int x=0; x < 3; x++){
+        colorTable[x] = colorTable[x+1];
+    }
+    colorTable[3] = swapColor;
 }
 
 // TODO: insert your code in this function for Mesh Transformation (Rotation)
