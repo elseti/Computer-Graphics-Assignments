@@ -102,7 +102,7 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
     // load file
     string fileContents;
    
-    ifstream file("../data/sphere.obj");
+    ifstream file("../data/garg.obj");
     if(!file.is_open()){
         cout << "Error opening OBJ file" << endl;
         return 0;
@@ -317,21 +317,12 @@ void RotateModel(float angle, glm::vec3 axis)
 // TODO: insert your code in this function for Mesh Transformation (Translation)
 void TranslateModel(glm::vec3 transVec)
 {
-    // cout << transVec[0] << transVec[1] << transVec[2] << endl;
     glm::mat4 translateMatrix = glm::mat4(1.0f);
-    translateMatrix[0][3] = transVec[0];
-    translateMatrix[1][3] = transVec[1];
-    translateMatrix[2][3] = transVec[2];
-
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            std::cout << translateMatrix[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
+    translateMatrix[3][0] = transVec[0];
+    translateMatrix[3][1] = transVec[1];
+    translateMatrix[3][2] = transVec[2];
 
     modelMatrix = modelMatrix * translateMatrix;
-
 }
 
 // TODO: insert your code in this function for Mesh Transformation (Scaling)
