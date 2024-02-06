@@ -112,10 +112,8 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
     // append line with \n
     string tempLine;
     while(getline(file, tempLine)){
-        // cout << tempLine;
         // check if format is roughly correct
         if(tempLine[0] == 'v' || tempLine[0] == 'f'){
-            // cout << tempLine << endl;
             fileContents += tempLine;
             fileContents += "\n";
         }
@@ -136,7 +134,6 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
 
     // STEP 1 - get complete face list and normal list first
     while(getline(fileStream, line, '\n')){
-        // cout << line << endl;
 
         // get the substrings (each element inside the line) first
         istringstream lineStream(line);
@@ -174,7 +171,6 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
                 while(getline(substringsStream, element, '/')){
                     // elementList now contains individual 123, 122, 121
                     try {
-                        // cout << element << endl;
                         elementList.push_back(stof(element));
                     } 
                     catch (const std::invalid_argument& e) {
@@ -183,13 +179,7 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
                     }
                 }
 
-                // cout << endl << "Element list: ";
-                // for (const auto& element : elementList) {
-                //     cout << element << " ";
-                // }
-
                 // put only the first element into triList. (converts char to float, -1 because OpenGL starts from index 0)
-                // cout << elementList[0] << endl;
                 triList.push_back(elementList[0] - 1);
                 
                 // put first and third/last element inside completeFaceList (vertex index and normal index)
@@ -201,21 +191,15 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
         }
     }
 
-    // cout << "Complete face list: ";
-    // for (const auto& element : completeFaceList) {
-    //     cout << element << " ";
-    // }
-
-    // STEP 2 - create an indexList to store index of normal as a value, which corresponds to the index of the vertex as the array's index idk how to explain...
+    // STEP 2 - create an indexList to store index of normal as a value, which corresponds to the index of the vertex as the array's index...
     
     // temp - to store [index_of_vertex, index_of_normal]
     vector<float> indexList;
 
     for(int x = 0; x < completeFaceList.size()-1; x+=2){
-        // remember we only store index and normal index here (ignore texture index)
-        
-        int vertex = static_cast<int>(completeFaceList[x]); // vertex index
 
+        // remember we only store index and normal index here (ignore texture index)
+        int vertex = static_cast<int>(completeFaceList[x]); // vertex index
         int normal = static_cast<int>(completeFaceList[x+1]); // vertex normal
 
         // resize if indexList isn't large enough
@@ -226,41 +210,12 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
         indexList[vertex] = normal;
     }
 
-    // string filePath = "output.txt";
-    // string outputFileContents;
-    // ofstream outputFile(filePath);
-    // if (outputFile.is_open()) {
-    //     for(int x=0; x<completeFaceList.size(); x++){
-    //         outputFileContents += completeFaceList[x];
-    //     }
-    //     outputFile << outputFileContents;
-    //     outputFile.close();
-    //     std::cout << "String exported to file: " << filePath << endl;
-    // } else {
-    //     std::cerr << "Error opening file: " << filePath << endl;
-    // }
-
-    // cout << endl << "Normal list: ";
-    // for (const auto& element : normalList) {
-    //     cout << element << " ";
-    // }
-
-    // cout << endl << "Index list: ";
-    // for (const auto& element : indexList) {
-    //     cout << element << " ";
-    // }
-
-    // cout << endl << "Just vertex list: ";
-    // for (const auto& element : justVertexList) {
-    //     cout << element << " ";
-    // }
-
     // STEP 3 - combine and store justVertexList and normalList into verList
     
     // assume number of normals is the same as number of vertices
     int indexCount = 0;
     for(int x=0; x < justVertexList.size()-2; x+=3){
-        // cout << endl << "x: " << x;
+
         // store just vertices
         verList.push_back(justVertexList[x]); // vertex x
         verList.push_back(justVertexList[x+1]); // vertex y
@@ -274,22 +229,7 @@ int LoadInput(vector<float> &verList, vector<unsigned> &triList)
         indexCount += 1;
     }
 
-    // cout << endl << "verList: ";
-    // for (const auto& element : verList) {
-    //     cout << element << " ";
-    // }
-
-    // cout << endl << "triList: ";
-    // for (const auto& element : triList) {
-    //     cout << element << " ";
-    // }
-
     file.close();
-
-    // Note: these two lines of code is to avoid runtime error; 
-    //       please remove them after you fill your own code for 3D model loading
-    // verList.push_back(0); 
-    // triList.push_back(0);
     
     return 0;
 }
@@ -312,7 +252,7 @@ void SetMeshColor(int &colorID)
 // TODO: insert your code in this function for Mesh Transformation (Rotation)
 void RotateModel(float angle, glm::vec3 axis)
 {
-    // using Rodrigues' Rotation Formula
+    // using Rodrigues' Rotation Formula.
     glm::vec3 normalizedAxis = glm::normalize(axis);
     float c = cos(angle);
     float s = sin(angle);
@@ -364,13 +304,6 @@ void ScaleModel(float scale)
     glm::mat4 scaleMatrix = glm::mat4(scale);
     scaleMatrix[3][3] = 1.0f;
     modelMatrix = modelMatrix * scaleMatrix;
-
-    // for (int i = 0; i < 4; ++i) {
-    //     for (int j = 0; j < 4; ++j) {
-    //         std::cout << scaleMatrix[i][j] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
 
     // Alternative method: (using glm::scale)
     // glm::vec3 scaleVector(scale);
