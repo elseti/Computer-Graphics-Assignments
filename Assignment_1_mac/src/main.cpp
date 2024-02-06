@@ -299,11 +299,14 @@ void SetMeshColor(int &colorID)
     // glUniform3fv(glGetUniformLocation(myShader.ID, "meshColor"), 1, &colorTable[colorID][0]);
     glm::vec3 swapColor = colorTable[colorID];
 
-    // hardcoded swapping colours based on the length of colorTable (4)
-    for(int x=0; x < 3; x++){
+    // swap colours in colorTable whenever "C" is pressed
+    int colorTableSize = sizeof(colorTable) / sizeof(colorTable[0]);
+    cout << colorTableSize << endl;
+
+    for(int x=0; x < colorTableSize - 1; x++){
         colorTable[x] = colorTable[x+1];
     }
-    colorTable[3] = swapColor;
+    colorTable[colorTableSize-1] = swapColor;
 }
 
 // TODO: insert your code in this function for Mesh Transformation (Rotation)
