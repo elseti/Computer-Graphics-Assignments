@@ -14,6 +14,7 @@
 #include <sstream>
 #include <vector>
 #include <fstream>
+#include <math.h> // added math
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -311,7 +312,32 @@ void SetMeshColor(int &colorID)
 // TODO: insert your code in this function for Mesh Transformation (Rotation)
 void RotateModel(float angle, glm::vec3 axis)
 {
-    
+    // using Rodrigues' Rotation Formula
+    glm::vec3 normalizedAxis = glm::normalize(axis);
+    float c = cos(angle);
+    float s = sin(angle);
+    float x = normalizedAxis[0];
+    float y = normalizedAxis[1];
+    float z = normalizedAxis[2];
+
+    glm::mat4 rotationMatrix = glm::mat4(1.0f);
+
+    rotationMatrix[0][0] = x * x * (1 - c) + c;
+    rotationMatrix[0][1] = x * y * (1 - c) - z * s;
+    rotationMatrix[0][2] = x * z * (1 - c) + y * s;
+
+    rotationMatrix[1][0] = y * x * (1 - c) + z * s;
+    rotationMatrix[1][1] = y * y * (1 - c) + c;
+    rotationMatrix[1][2] = y * z * (1 - c) - x * s;
+
+    rotationMatrix[2][0] = x * z * (1 - c) - y * s;
+    rotationMatrix[2][1] = y * z * (1 - c) + x * s;
+    rotationMatrix[2][2] = z * z * (1 - c) + c;
+
+    modelMatrix = modelMatrix * rotationMatrix;
+
+    // Another method: (using glm::rotate)
+    // modelMatrix = glm::rotate(modelMatrix, angle, axis);
 }
 
 // TODO: insert your code in this function for Mesh Transformation (Translation)

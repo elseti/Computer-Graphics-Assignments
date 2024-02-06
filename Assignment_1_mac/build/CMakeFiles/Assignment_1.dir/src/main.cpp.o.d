@@ -423,6 +423,8 @@ CMakeFiles/Assignment_1.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1/stack \
   /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1/deque \
   /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1/iomanip \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1/math.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/math.h \
   /Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_1_mac/includes/glad/glad.h \
   /Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_1_mac/includes/KHR/khrplatform.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1/inttypes.h \
@@ -550,8 +552,6 @@ CMakeFiles/Assignment_1.dir/src/main.cpp.o: \
   /Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_1_mac/includes/glm/gtc/../detail/type_vec2.hpp \
   /Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_1_mac/includes/glm/gtc/../detail/type_vec4.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1/cmath \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1/math.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/math.h \
   /Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_1_mac/includes/glm/gtc/../detail/func_exponential.inl \
   /Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_1_mac/includes/glm/gtc/.././ext/../detail/../vector_relational.hpp \
   /Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_1_mac/includes/glm/gtc/../detail/func_vector_relational.inl \
