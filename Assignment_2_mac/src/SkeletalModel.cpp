@@ -19,7 +19,70 @@
 //       (i.e., set values for m_rootJoint and m_joints)
 void SkeletalModel::loadSkeleton( const char* filename )
 {
+    string fileContents;
    
+    // ifstream file(filename);
+    ifstream file("../data/Model1.skel"); // TODO- replace
+    if(!file.is_open()){
+        cout << "Error opening skel file" << endl;
+    }
+
+    string jointLine;
+    while(getline(file, jointLine)){
+
+        // extract the 4 fields from line
+        istringstream jointStream(jointLine);
+        string jointField;
+        vector<float> jointFieldList;
+        while(getline(jointStream, jointField, ' ')){
+            jointFieldList.push_back(stof(jointField));
+        }
+
+        // create a translation matrix for joint
+        // WARNING - check if translation is at bottom or right (now is at bottom)
+        glm::mat4 jointMatrix = glm::mat4(1.0f);
+        jointMatrix[3][0] = jointFieldList[0];
+        jointMatrix[3][1] = jointFieldList[1];
+        jointMatrix[3][2] = jointFieldList[2];
+
+        // create a new joint and assign its transform
+        Joint *currJoint = new Joint;
+        currJoint -> transform = jointMatrix;
+
+        // assign to rootJoint if joint is root
+        if(jointFieldList[3] == -1){
+            m_rootJoint = currJoint;
+            m_joints.push_back(currJoint); // not sure if m_joints include m_rootJoint
+        }
+        else{
+            // if it's the first joint, assign the current joint as m_rootJoint's child
+            if(jointFieldList[3] == 0){
+                m_rootJoint -> children.push_back(currJoint);
+                m_joints.push_back(currJoint);
+            }
+            else{
+                m_joints[jointFieldList[3]] -> children.push_back(currJoint);
+                // currJoint -> children.push_back(m_joints[jointFieldList[3]]);
+                m_joints.push_back(currJoint);
+            }
+            
+        }
+
+        // cout << "jointMatrix" << endl;
+        // for (int i = 0; i < 4; ++i) {
+        //     for (int j = 0; j < 4; ++j) {
+        //         std::cout << currJoint->transform[i][j] << " ";
+        //     }
+        //     std::cout << std::endl;
+        // }
+
+        // cout << m_joints.size() << endl;
+        // cout << m_rootJoint -> transform << endl;
+
+        // for (const auto& element : m_joints) {
+        //     cout << element << " ";
+        // }
+    }
 }
 
 
