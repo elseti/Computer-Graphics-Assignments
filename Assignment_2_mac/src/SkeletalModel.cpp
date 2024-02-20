@@ -41,9 +41,13 @@ void SkeletalModel::loadSkeleton( const char* filename )
         // create a translation matrix for joint
         // WARNING - check if translation is at bottom or right (now is at bottom)
         glm::mat4 jointMatrix = glm::mat4(1.0f);
-        jointMatrix[3][0] = jointFieldList[0];
-        jointMatrix[3][1] = jointFieldList[1];
-        jointMatrix[3][2] = jointFieldList[2];
+        // jointMatrix[3][0] = jointFieldList[0];
+        // jointMatrix[3][1] = jointFieldList[1];
+        // jointMatrix[3][2] = jointFieldList[2];
+
+        jointMatrix[0][3] = jointFieldList[0];
+        jointMatrix[1][3] = jointFieldList[1];
+        jointMatrix[2][3] = jointFieldList[2];
 
         // create a new joint and assign its transform
         Joint *currJoint = new Joint;
@@ -110,12 +114,41 @@ void SkeletalModel::computeJointTransforms( )
     m_matrixStack.clear();
 
     computeJointTransforms(m_rootJoint, m_matrixStack);
+
+    for (const auto& element : jointMatList) {
+        cout << "jointMatList" << endl;
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                std::cout << element[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
 }
 
 // TODO: You will need to implement this recursive helper function to traverse the joint hierarchy for computing transformations of the joints
 void SkeletalModel::computeJointTransforms(Joint* joint, MatrixStack matrixStack)
 {
-   
+    // cout << "matrixstack top" << endl;
+    // for (int i = 0; i < 4; ++i) {
+    //     for (int j = 0; j < 4; ++j) {
+    //         std::cout << matrixStack.top()[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+
+    matrixStack.push(joint -> transform); // note: no need to do multiplication, matrix stack already does it for you.
+    jointMatList.push_back( matrixStack.top() );
+    
+    if(joint->children.size() == 0){
+        matrixStack.pop();
+        return;
+    }
+    for(int x=0; x < joint->children.size(); x++){
+        computeJointTransforms(joint -> children[x], matrixStack);
+    }
+
+    
 }
 
 
