@@ -41,13 +41,13 @@ void SkeletalModel::loadSkeleton( const char* filename )
         // create a translation matrix for joint
         // WARNING - check if translation is at bottom or right (now is at bottom)
         glm::mat4 jointMatrix = glm::mat4(1.0f);
-        // jointMatrix[3][0] = jointFieldList[0];
-        // jointMatrix[3][1] = jointFieldList[1];
-        // jointMatrix[3][2] = jointFieldList[2];
+        jointMatrix[3][0] = jointFieldList[0];
+        jointMatrix[3][1] = jointFieldList[1];
+        jointMatrix[3][2] = jointFieldList[2];
 
-        jointMatrix[0][3] = jointFieldList[0];
-        jointMatrix[1][3] = jointFieldList[1];
-        jointMatrix[2][3] = jointFieldList[2];
+        // jointMatrix[0][3] = jointFieldList[0];
+        // jointMatrix[1][3] = jointFieldList[1];
+        // jointMatrix[2][3] = jointFieldList[2];
 
         // create a new joint and assign its transform
         Joint *currJoint = new Joint;
@@ -72,20 +72,13 @@ void SkeletalModel::loadSkeleton( const char* filename )
             
         }
 
-        // cout << "jointMatrix" << endl;
-        // for (int i = 0; i < 4; ++i) {
-        //     for (int j = 0; j < 4; ++j) {
-        //         std::cout << currJoint->transform[i][j] << " ";
-        //     }
-        //     std::cout << std::endl;
-        // }
-
-        // cout << m_joints.size() << endl;
-        // cout << m_rootJoint -> transform << endl;
-
-        // for (const auto& element : m_joints) {
-        //     cout << element << " ";
-        // }
+        cout << "jointMatrix" << endl;
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                std::cout << currJoint->transform[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
     }
 }
 
@@ -115,29 +108,21 @@ void SkeletalModel::computeJointTransforms( )
 
     computeJointTransforms(m_rootJoint, m_matrixStack);
 
-    for (const auto& element : jointMatList) {
-        cout << "jointMatList" << endl;
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                std::cout << element[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-    }
+    // for (const auto& element : jointMatList) {
+    //     cout << "jointMatList" << endl;
+    //     for (int i = 0; i < 4; ++i) {
+    //         for (int j = 0; j < 4; ++j) {
+    //             std::cout << element[i][j] << " ";
+    //         }
+    //         std::cout << std::endl;
+    //     }
+    // }
 }
 
 // TODO: You will need to implement this recursive helper function to traverse the joint hierarchy for computing transformations of the joints
 void SkeletalModel::computeJointTransforms(Joint* joint, MatrixStack matrixStack)
 {
-    // cout << "matrixstack top" << endl;
-    // for (int i = 0; i < 4; ++i) {
-    //     for (int j = 0; j < 4; ++j) {
-    //         std::cout << matrixStack.top()[i][j] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-
-    matrixStack.push(joint -> transform); // note: no need to do multiplication, matrix stack already does it for you.
+    matrixStack.push(glm::transpose(joint->transform)); // note: no need to do multiplication, matrix stack already does it for you.
     jointMatList.push_back(matrixStack.top());
     
     if(joint->children.size() == 0){
@@ -145,10 +130,8 @@ void SkeletalModel::computeJointTransforms(Joint* joint, MatrixStack matrixStack
         return;
     }
     for(int x=0; x < joint->children.size(); x++){
-        computeJointTransforms(joint -> children[x], matrixStack);
+        computeJointTransforms(joint->children[x], matrixStack);
     }
-
-    
 }
 
 
@@ -161,132 +144,59 @@ void SkeletalModel::computeBoneTransforms( )
 
     computeBoneTransforms(m_rootJoint, m_matrixStack);
 
-    for (const auto& element : boneMatList) {
-        cout << "boneMatList" << endl;
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                std::cout << element[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-    }
+    // for (const auto& element : boneMatList) {
+    //     cout << "boneMatList" << endl;
+    //     for (int i = 0; i < 4; ++i) {
+    //         for (int j = 0; j < 4; ++j) {
+    //             std::cout << element[i][j] << " ";
+    //         }
+    //         std::cout << std::endl;
+    //     }
+    // }
 }
 
 // TODO: You will need to implement this recursive helper function to traverse the joint hierarchy for computing transformations of the bones
 void SkeletalModel::computeBoneTransforms(Joint* joint, MatrixStack matrixStack)
 {
-    if(joint->children.size() == 0){
-        return;
-    }
+
+    matrixStack.push(glm::transpose(joint->transform));
 
     for(int x=0; x<joint->children.size(); x++){
         Joint* child = joint->children[x];
 
-        glm::vec3 currJointTranslationVector(joint->transform[0][3], joint->transform[1][3], joint->transform[2][3]);
-        glm::vec3 childJointTranslationVector(child->transform[0][3], child->transform[1][3], child->transform[2][3]);
+        // get vector of child transform and length
+        glm::vec3 childJointTranslationVector = glm::vec3(child->transform[3]);
+        float boneLength = glm::length(childJointTranslationVector);
 
-        glm::vec3 boneDirection = childJointTranslationVector - currJointTranslationVector;
+        // translate z by 0.5 to align bones
+        glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0.5f));
 
-        float boneLength = glm::length(boneDirection);
+        // scale so bone will be smaller
+        glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f, 0.01f, boneLength));
 
-        glm::vec3 boneScale(0.01f, 0.01f, boneLength);
+        // get local axes by finding normals of zVectors, etc.
+        glm::vec3 zVector = glm::normalize(childJointTranslationVector);
+        glm::vec3 yVector = glm::normalize(glm::cross(zVector, glm::vec3(0, 0, 1)));
+        glm::vec3 xVector = glm::normalize(glm::cross(yVector, zVector));
 
-        // glm::mat4 jointTransform = parentTransform * joint->transform;
-        glm::vec3 boneTranslate = glm::vec3(joint->transform[3]) * boneDirection;
-        // glm::mat4 boneTranslate = glm::mat4(1.0f);
-        // boneTranslate[0][3] = boneTranslateVector[0];
-        // boneTranslate[1][3] = boneTranslateVector[1];
-        // boneTranslate[2][3] = boneTranslateVector[2];
+        // make rotation matrix using the vectors
+        glm::mat3 rotation(xVector, yVector, zVector);
+        glm::mat4 rotationMatrix = glm::mat4(rotation);
 
+        // compute transformation matrix
+        glm::mat4 transformationMatrix = rotationMatrix * scaleMatrix * translationMatrix;
 
-        // glm::vec3 boneTranslation = joint->transform + 0.5f * boneDirection;
-        // glm::mat4 boneTranslate = joint->transform;
-        // boneTranslate[0][3] = boneTranslate[0][3] * boneDirection;
-        // boneTranslate[1][3] = boneTranslate[1][3] * boneDirection;
-        // boneTranslate[2][3] = boneTranslate[2][3] * boneDirection;
+        matrixStack.push(glm::transpose(transformationMatrix));
 
-        // Compute the transformation matrix for the bone between the current joint and its child
-        // glm::vec3 boneDirection = child->position - joint->position;
-        // float boneLength = glm::length(boneDirection);
-        // glm::vec3 boneScale(1.0f, boneLength, 1.0f);
-        // glm::vec3 boneTranslation = joint->position + 0.5f * boneDirection; (??)
-
-        // glm::mat4 boneTransform = glm::translate(glm::mat4(1.0f), boneTranslation) *
-        //                           glm::scale(glm::mat4(1.0f), boneScale) *
-        //                           glm::toMat4(glm::quatLookAt(glm::normalize(boneDirection), glm::vec3(0.0f, 1.0f, 0.0f)));
-        glm::vec3 zAxis = glm::vec3(0.0f, 0.0f, 1.0f); // Default z-axis
-        glm::vec3 rotationAxis = glm::cross(zAxis, boneDirection); // Calculate rotation axis
-        
-        // float rotationAngle = glm::angleBetween(zAxis, boneDirection); // Calculate rotation angle
-
-        glm::mat4 boneTransform = glm::translate(glm::mat4(1.0f), boneTranslate) *
-                                  glm::scale(glm::mat4(1.0f), boneScale);
-
-
-        // Push the bone transformation matrix to the list
-        matrixStack.push(boneTransform);
         boneMatList.push_back(matrixStack.top());
 
-        // Recursively compute the bone transforms for the child joint
+        matrixStack.pop();
+
         computeBoneTransforms(child, matrixStack);
 
     }
 
-        // for (const auto& element : joint->chi 
-        //     for (int i = 0; i < 4; ++i) {
-        //         for (int j = 0; j < 4; ++j) {
-        //             std::cout << element->transform[i][j] << " ";
-        //         }
-        //         std::cout << std::endl;
-        //     }
-        // }
-        
-        // glm::vec3 translationVector(joint->transform[3][0], joint->transform[3][1], joint->transform[3][2]);
-    //     glm::vec3 currJointTranslationVector(joint->transform[0][3], joint->transform[1][3], joint->transform[2][3]);
-    //     glm::vec3 childJointTranslationVector(joint->children[0]->transform[0][3], joint->children[0]->transform[1][3], joint->children[0]->transform[2][3]);
-
-            
-    //     // // }
-    //     // glm::vec3 boneTranslateVector = currJointTranslationVector - childJointTranslationVector;
-
-    //     // // get length of bone
-    //     // float length = glm::length(boneTranslateVector);
-
-    //     // // Calculate the direction vector of the bone
-    //     // glm::vec3 direction = boneTranslateVector / length;
-
-    //     // // scale vector
-    //     // glm::vec3 scaleVector (0.01, 0.01, length);
-
-    //     // cout << boneTranslateVector[0] << boneTranslateVector[1] << boneTranslateVector[2] << endl;
-    //     glm::mat4 boneTranslate = glm::mat4(1.0f);
-    //     boneTranslate[0][3] = boneTranslateVector[0];
-    //     boneTranslate[1][3] = boneTranslateVector[1];
-    //     boneTranslate[2][3] = boneTranslateVector[2];
-
-    //     // glm::mat4 boneTranslate = glm::translate(glm::mat4(1.0f), boneTranslateVector);
-
-    //     // glm::mat4 boneScale = glm::scale(boneTranslate, scaleVector);
-    //     glm::mat4 boneScale = glm::scale(glm::mat4(1.0f), scaleVector);
-    //     // glm::mat4 boneResult = 
-
-    //     matrixStack.push(boneScale); // note: no need to do multiplication, matrix stack already does it for you.
-        
-    //     boneMatList.push_back(matrixStack.top());
-        
-    //     // if(joint->children.size() == 0){
-    //     //     matrixStack.pop();
-    //     //     return;
-    //     // }
-    //     matrixStack.pop();
-
-    //     for(int x=0; x < joint->children.size(); x++){
-    //         computeBoneTransforms(joint -> children[x], matrixStack);
-    //     }
-    // }
-    // else{
-    //     return;
-    // }
+    // matrixStack.pop();
     
 
 }
