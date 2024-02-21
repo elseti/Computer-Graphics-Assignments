@@ -21,8 +21,8 @@ void SkeletalModel::loadSkeleton( const char* filename )
 {
     string fileContents;
    
-    // ifstream file(filename);
-    ifstream file("../data/Model1.skel"); // TODO- replace
+    ifstream file(filename);
+    // ifstream file("../data/Model1.skel");
     if(!file.is_open()){
         cout << "Error opening skel file" << endl;
     }
@@ -39,15 +39,11 @@ void SkeletalModel::loadSkeleton( const char* filename )
         }
 
         // create a translation matrix for joint
-        // WARNING - check if translation is at bottom or right (now is at bottom)
+        // Note - transposed matrix
         glm::mat4 jointMatrix = glm::mat4(1.0f);
         jointMatrix[3][0] = jointFieldList[0];
         jointMatrix[3][1] = jointFieldList[1];
         jointMatrix[3][2] = jointFieldList[2];
-
-        // jointMatrix[0][3] = jointFieldList[0];
-        // jointMatrix[1][3] = jointFieldList[1];
-        // jointMatrix[2][3] = jointFieldList[2];
 
         // create a new joint and assign its transform
         Joint *currJoint = new Joint;
@@ -107,16 +103,6 @@ void SkeletalModel::computeJointTransforms( )
     m_matrixStack.clear();
 
     computeJointTransforms(m_rootJoint, m_matrixStack);
-
-    // for (const auto& element : jointMatList) {
-    //     cout << "jointMatList" << endl;
-    //     for (int i = 0; i < 4; ++i) {
-    //         for (int j = 0; j < 4; ++j) {
-    //             std::cout << element[i][j] << " ";
-    //         }
-    //         std::cout << std::endl;
-    //     }
-    // }
 }
 
 // TODO: You will need to implement this recursive helper function to traverse the joint hierarchy for computing transformations of the joints
@@ -143,16 +129,6 @@ void SkeletalModel::computeBoneTransforms( )
     m_matrixStack.clear();
 
     computeBoneTransforms(m_rootJoint, m_matrixStack);
-
-    // for (const auto& element : boneMatList) {
-    //     cout << "boneMatList" << endl;
-    //     for (int i = 0; i < 4; ++i) {
-    //         for (int j = 0; j < 4; ++j) {
-    //             std::cout << element[i][j] << " ";
-    //         }
-    //         std::cout << std::endl;
-    //     }
-    // }
 }
 
 // TODO: You will need to implement this recursive helper function to traverse the joint hierarchy for computing transformations of the bones
@@ -161,7 +137,7 @@ void SkeletalModel::computeBoneTransforms(Joint* joint, MatrixStack matrixStack)
 
     matrixStack.push(glm::transpose(joint->transform));
 
-    for(int x=0; x<joint->children.size(); x++){
+    for(int x=0; x < joint->children.size(); x++){
         Joint* child = joint->children[x];
 
         // get vector of child transform and length
@@ -196,9 +172,6 @@ void SkeletalModel::computeBoneTransforms(Joint* joint, MatrixStack matrixStack)
 
     }
 
-    // matrixStack.pop();
-    
-
 }
 
 
@@ -211,7 +184,16 @@ void SkeletalModel::computeBoneTransforms(Joint* joint, MatrixStack matrixStack)
 // TODO: Set the rotation part of the joint's transformation matrix based on the passed in Euler angles.
 void SkeletalModel::setJointTransform(int jointIndex, float angleX, float angleY, float angleZ)
 {
+    glm::mat4 jointTransform = m_joints[jointIndex]->transform;
 
+    // format of rotate: glm::mat4 glm::rotate(glm::mat4 const& m, float angle, glm::vec3 const& axis);
+    glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f), glm::radians(angleX), glm::vec3(1, 0, 0));
+    glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f), glm::radians(angleY), glm::vec3(0, 1, 0));
+    glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f), glm::radians(angleZ), glm::vec3(0, 0, 1));
+
+    glm::mat4 transformationMatrix = jointTransform * rotateZ * rotateY * rotateX;
+
+    m_joints[jointIndex]->transform = transformationMatrix;
 }
 
 
