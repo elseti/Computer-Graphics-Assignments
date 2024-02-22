@@ -67,14 +67,6 @@ void SkeletalModel::loadSkeleton( const char* filename )
             }
             
         }
-
-        cout << "jointMatrix" << endl;
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                std::cout << currJoint->transform[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
     }
 }
 
