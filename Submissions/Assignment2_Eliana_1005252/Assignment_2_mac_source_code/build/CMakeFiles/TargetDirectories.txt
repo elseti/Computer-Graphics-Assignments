@@ -1,0 +1,5 @@
+/Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_2_mac/build/CMakeFiles/source_lib.dir
+/Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_2_mac/build/CMakeFiles/GLAD.dir
+/Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_2_mac/build/CMakeFiles/Assignment_2.dir
+/Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_2_mac/build/CMakeFiles/edit_cache.dir
+/Users/user/Desktop/Graphics/Computer-Graphics-Assignments/Assignment_2_mac/build/CMakeFiles/rebuild_cache.dir

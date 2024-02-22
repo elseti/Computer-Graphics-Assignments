@@ -1,69 +1,69 @@
-Assignment 1 - README (Eliana Setiabudi, 1005252)
+Assignment 2 - README (Eliana Setiabudi, 1005252)
 
 =====================================================================
-======================= PART 1 (MESH LOADING) =======================
+======================= PART 1 (Load Skeleton File) =======================
 
 Steps:
 
-1. Read OBJ file
+1. Read .skel file
 
-2. Iterate each line and get completeFaceList (containing vertex index and normal index from the face list "f", ignoring texture index), normalList (containing all normals "vn"), justVertexList (storing only vertices "v"), and triList (first element of the face list "f").
+2. Iterate through each line in the file and extract the 4 fields of the joint from the line. 
 
-3. Create an indexList to store the index of a normal as an element, which corresponds/maps to the vertex's index.
+3. Create a transformation matrix for the joint, declare a new joint, and store the transformation matrix in its transform attribute.
 
-4. Combine and store justVertexList and normalList into verList.
+4. Assign the joint to m_rootJoint if the parent index is -1. Else, if it's the first joint, assign the current joint as m_rootJoint's child. If it's not the first joint and not the root joint, assign the current joint as jointFieldList[parentIndex]'s child.
+
+5. Store the joint in m_joints.
 
 5. Close the file.
 
 
 
-======================= PART 2 (MESH RENDERING) =======================
+======================= PART 2 (Draw Skeleton) =======================
+
+(computeJointTransforms)
 
 Steps:
 
-0. Nothing much. Did kind of read the shader.h.
+1. Push transposed joint's transform matrix into matrixStack.
+
+2. Push matrixStack.top() into jointMatList.
+
+3. If current joint has no children, pop stack and return.
+
+4. Else, for every joint's children, recursively call computeJointTransforms().
 
 
-======================= PART 3 (MESH COLORING) =======================
-
-Steps:
-
-1. Realized that the main loop calls colorTable[colorID][0].
-
-2. Coded the rotation/swap of the color order in colorTable whenever "c" is pressed so that the next color is in index 0.
-
-
-======================= PART 4 (MESH COLORING) =======================
-
-ROTATE MODEL
+(computeBoneTransforms)
 
 Steps:
 
-1. Used Rodrigues' Rotation Formula to compute the rotationMatrix.
+1. Push transposed joint's transform matrix into matrixStack.
 
-2. Multiplied the rotationMatrix with the modelMatrix.
+2. For every child in the joint's children:
+
+a. Get vector and its length of the child's transform.
+b. Create translation matrix to translate the cylinders' z by 0.5 to align them.
+c. Scale bone by (0.01f, 0.01f, boneLength) so it will be smaller and scaled to bone's length.
+d. Get local axes and direction by finding normals of the child's transformation.
+e. Make rotation matrix using the vectors.
+f. Compute transformation matrix by multiplying all the matrices.
+g. Push the transformation matrix into the matrixStack.
+h. Push matrixStack.top() into boneMatList.
+i. Pop the matrixStack.
+j. Recursively call computeBoneTransforms().
 
 
-TRANSLATE MODEL
+======================= PART 3 (CHANGE POSE OF SKELETON) =======================
 
 Steps:
 
-1. Created a 4x4 identity matrix.
+1. Get the transformation matrix of the joint at the jointIndex.
 
-2. Added the translation vector into the bottom-most translation matrix except the right-most bottom. I.e., [[1,0,0,0], [0,1,0,0], [0,0,1,0], [tx,ty,tz,1]].
+2. Make rotation matrices for rotation in X, Y, and Z axes using glm::rotate library.
 
-3. Multiplied the translation matrix with the modelMatrix.
+3. Get the transformation matrix by multiplying them in a ZYX order.
 
-
-SCALE MODEL
-
-Steps:
-
-1. Created a 4x4 scale matrix with the scale as a diagonal, i.e. [[sx,0,0,0], [0,sy,0,0], [0,0,sz,0], [0,0,0,1]].
-
-2. Multiplied the scale matrix with the modelMatrix.
+4. Replace the transform of the joint with the new transformation matrix.
 
 =====================================================================
-
-
-I learnt a lot. It was fun. I do think there should be a better way to load the OBJ file. My method takes too many steps and memory.

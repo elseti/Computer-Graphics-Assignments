@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libsource_lib.a CMakeFiles/source_lib.dir/src/Cylinder.cpp.o CMakeFiles/source_lib.dir/src/Joint.cpp.o CMakeFiles/source_lib.dir/src/MatrixStack.cpp.o CMakeFiles/source_lib.dir/src/SkeletalModel.cpp.o CMakeFiles/source_lib.dir/src/Sphere.cpp.o CMakeFiles/source_lib.dir/src/main.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libsource_lib.a
