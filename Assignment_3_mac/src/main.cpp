@@ -136,13 +136,6 @@ void calcPlaneMapping(void)
 //// TODO: fill this function to realize cylindrical mapping
 void calcCylindricalMapping(void)
 { 
-    float xMin = myObject.bBox.minP[0];
-    float yMin = myObject.bBox.minP[1];
-    float xMax = myObject.bBox.maxP[0];
-    float yMax = myObject.bBox.maxP[1];
-
-    float radius = (xMax - xMin) / 2;
-
     for(int x = 0; x < myObject.vertices.size(); x++){  
         float xPos = myObject.vertices[x].v[0];
         float yPos = myObject.vertices[x].v[1];
@@ -150,11 +143,8 @@ void calcCylindricalMapping(void)
 
         float theta = atan(yPos / xPos);
 
-        // cout << theta << endl;
-
         myObject.vertices[x].t[0] = theta;
         myObject.vertices[x].t[1] = zPos;
-        // cout << zPos << endl;
     }
     
 }
@@ -163,7 +153,22 @@ void calcCylindricalMapping(void)
 //// TODO: fill this function to realize sphere mapping
 void calcSphereMapping(void)
 {
-   
+   for(int x = 0; x < myObject.vertices.size(); x++){  
+        float xPos = myObject.vertices[x].v[0];
+        float yPos = myObject.vertices[x].v[1];
+        float zPos = myObject.vertices[x].v[2];
+
+        float theta = atanf(yPos / xPos);
+        float rho = sqrtf(xPos * xPos + yPos * yPos + zPos * zPos);
+        float phi = acosf(zPos / rho);
+
+        myObject.vertices[x].t[0] = theta;
+        myObject.vertices[x].t[1] = phi;
+        // myObject.vertices.at(x).t[0] = (theta + PI) / (2 * PI);
+        // myObject.vertices[x].t[1] = phi / PI;
+
+        // cout << theta << phi << endl;
+    }
 }
 
 
