@@ -98,8 +98,38 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 //// TODO: fill this function to realize plane mapping
 void calcPlaneMapping(void)
-{
-  
+{   
+    // get xMin, yMin, xMax, yMax
+    float xMin = myObject.bBox.minP[0];
+    float yMin = myObject.bBox.minP[1];
+    float xMax = myObject.bBox.maxP[0];
+    float yMax = myObject.bBox.maxP[1];
+
+    for(int x = 0; x < myObject.vertices.size(); x++){  
+        float xPos = myObject.vertices[x].v[0];
+        float yPos = myObject.vertices[x].v[1];
+        
+        float u = (xPos - xMin) / (xMax - xMin);
+        float v = (yPos - yMin) / (yMax - yMin);
+
+        // store (u, v) texture coordinate
+        myObject.vertices[x].t[0] = u;
+        myObject.vertices[x].t[1] = v;
+    }
+
+    // for(int i=0; i<5; i++){
+    //     cout << myObject.vertices[0].v[i] << endl;
+    // }
+
+    // for (const auto& element : myObject.vertices.v) {
+    //     cout << "jointMatList" << endl;
+    //     for (int i = 0; i < 4; ++i) {
+    //         for (int j = 0; j < 4; ++j) {
+    //             std::cout << element[i][j] << " ";
+    //         }
+    //         std::cout << std::endl;
+    //     }
+    // }
 }
 
 
