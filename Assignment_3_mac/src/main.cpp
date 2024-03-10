@@ -116,20 +116,6 @@ void calcPlaneMapping(void)
         myObject.vertices[x].t[0] = u;
         myObject.vertices[x].t[1] = v;
     }
-
-    // for(int i=0; i<5; i++){
-    //     cout << myObject.vertices[0].v[i] << endl;
-    // }
-
-    // for (const auto& element : myObject.vertices.v) {
-    //     cout << "jointMatList" << endl;
-    //     for (int i = 0; i < 4; ++i) {
-    //         for (int j = 0; j < 4; ++j) {
-    //             std::cout << element[i][j] << " ";
-    //         }
-    //         std::cout << std::endl;
-    //     }
-    // }
 }
 
 
@@ -143,10 +129,10 @@ void calcCylindricalMapping(void)
 
         float theta = atan(yPos / xPos);
 
-        myObject.vertices[x].t[0] = theta;
+        // normalize angle so between 0 and 1
+        myObject.vertices[x].t[0] = (theta + PI) / (2 * PI);
         myObject.vertices[x].t[1] = zPos;
     }
-    
 }
 
 
@@ -158,16 +144,14 @@ void calcSphereMapping(void)
         float yPos = myObject.vertices[x].v[1];
         float zPos = myObject.vertices[x].v[2];
 
+        // derive from math functions
         float theta = atanf(yPos / xPos);
         float rho = sqrtf(xPos * xPos + yPos * yPos + zPos * zPos);
         float phi = acosf(zPos / rho);
 
-        myObject.vertices[x].t[0] = theta;
-        myObject.vertices[x].t[1] = phi;
-        // myObject.vertices.at(x).t[0] = (theta + PI) / (2 * PI);
-        // myObject.vertices[x].t[1] = phi / PI;
-
-        // cout << theta << phi << endl;
+        // normalize angle so between 0 and 1
+        myObject.vertices.at(x).t[0] = (theta + PI) / (2 * PI);
+        myObject.vertices[x].t[1] = phi / PI;
     }
 }
 
@@ -242,11 +226,8 @@ int LoadInput()
 
     //taking from standard input
     cout << "Please enter filename.obj: ";
-    // TODO - uncomment
-    // cin >> inputString;
-    // cout << "Displaying: " << inputString <<endl;
-
-    inputString = "../data/sphere.obj";
+    cin >> inputString;
+    cout << "Displaying: " << inputString <<endl;
 
     ifstream myfile(inputString);
 
