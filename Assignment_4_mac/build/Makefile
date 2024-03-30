@@ -306,3 +306,6 @@ cmake_check_build_system:
 
 test1:
 	./Assignment_4 -input ../data/scene01_plane.txt -size 200 200 -output scene_1.bmp
+
+test3:
+	./Assignment_4 -input ../data/scene03_sphere.txt -size 200 200 -output scene_3.bmp
