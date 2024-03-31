@@ -34,14 +34,13 @@ public:
       vec3 dTrans = vec3(matInv * dVec4);
 
       // make new ray with the transformed
-      Ray transRay = Ray(oTrans, dTrans);
-
-      // transform normal
-      vec4 n = vec4(h.getNormal(), 0.0f);
-      vec3 nTrans = normalize(vec3(transpose(matInv) * n));
+      Ray transRay = Ray(oTrans, dTrans);     
 
       // delegate to intersect function of object
       if (o->intersect(transRay, h, tmin)) {
+        // transform normal
+        vec4 n = vec4(h.getNormal(), 0.0f);
+        vec3 nTrans = normalize(vec3(transpose(matInv) * n));
         h.set(h.getT(), h.getMaterial(), nTrans);
         return true;
       }

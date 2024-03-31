@@ -23,33 +23,7 @@ public:
 
     /// TODO: implement this function for ray-triangle intersection test.
 	virtual bool intersect( const Ray& r,  Hit& h , float tmin)
-    {
-        /*
-        vec3 constCol = this->a - r.getOrigin();
-        vec3 betaCol = this->a - this->b;
-        vec3 gammaCol = this->a - this->c;
-        vec3 tCol = r.getDirection();
-
-        float coefDet = determinant(glm::mat3(betaCol, gammaCol, tCol));
-        float betaDet = determinant(glm::mat3(constCol, gammaCol, tCol));
-        float gammaDet = determinant(glm::mat3(betaCol, constCol, tCol));
-        float tDet = determinant(glm::mat3(betaCol, gammaCol, constCol));
-
-        float beta = betaDet / coefDet;
-        float gamma = gammaDet / coefDet;
-        float t = tDet / coefDet;
-
-        if (t > tmin && t < h.getT() && beta + gamma <= 1.0f && beta >= 0.0f && gamma >= 0.0f) {
-            float alpha = 1.0f - beta - gamma;
-            vec3 normal = alpha * normals[0] + beta * normals[1] + gamma * normals[2];
-            h.set(t, this->material, glm::normalize(normal));
-            return true;
-        }
-
-        return false;
-        */
-
-        
+    {   
         // using Moller-Trumbore intersection algorithm
         // set up variable
         float epsilon = std::numeric_limits<float>::epsilon();
@@ -91,15 +65,15 @@ public:
 
         // compute t to find where intersection is
         float t = invDet * dot(edge2, sCrossEdge1);
+
         if(t > tmin && t < h.getT()){
             float w = 1.0f - u - v;
-            vec3 normal = u * normals[0] + v * normals[1] + w * normals[2];
+            vec3 normal = w * normals[0] + u * normals[1] + v * normals[2];
             h.set(t, material, normalize(normal));
             return true;
         }
 
-        return false;   // remove this sentence in your implementation
-        
+        return false; 
     }
     
 	bool hasTex;

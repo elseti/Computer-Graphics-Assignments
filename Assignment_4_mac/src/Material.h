@@ -56,7 +56,6 @@ public:
       }
       
       return totalVec;
-      
     }
 
     void loadTexture(const char * filename)

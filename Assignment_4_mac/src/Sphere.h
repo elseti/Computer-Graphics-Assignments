@@ -70,27 +70,6 @@ public:
         return isIntersected; 
 	}
 
-    void printVector(string title, vec3 vector ){
-        cout << title << ": ";
-        for(int i=0; i<3; i++){
-            cout << vector[i] << ", ";
-        }
-        cout << endl;
-    }
-
-    // for(int i=0; i<5; i++){
-    //     cout << myObject.vertices[0].v[i] << endl;
-    // }
-
-    // for (const auto& element : myObject.vertices.v) {
-    //     cout << "jointMatList" << endl;
-    //     for (int i = 0; i < 4; ++i) {
-    //         for (int j = 0; j < 4; ++j) {
-    //             std::cout << element[i][j] << " ";
-    //         }
-    //         std::cout << std::endl;
-    //     }
-    // }
 
 protected:
     vec3 center;
