@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libsource_lib.a CMakeFiles/source_lib.dir/src/Image.cpp.o CMakeFiles/source_lib.dir/src/Mesh.cpp.o CMakeFiles/source_lib.dir/src/SceneParser.cpp.o CMakeFiles/source_lib.dir/src/main.cpp.o CMakeFiles/source_lib.dir/src/texture.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libsource_lib.a

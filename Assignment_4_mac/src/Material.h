@@ -20,9 +20,9 @@ public:
     }
 
     virtual ~Material()
-      {
+    {
 
-      }
+    }
 
     virtual vec3 getDiffuseColor() const 
     { 
