@@ -307,5 +307,17 @@ cmake_check_build_system:
 test1:
 	./Assignment_4 -input ../data/scene01_plane.txt -size 200 200 -output scene_1.bmp
 
+test2:
+	./Assignment_4 -input ../data/scene02_cube.txt -size 200 200 -output scene_2.bmp
+
 test3:
 	./Assignment_4 -input ../data/scene03_sphere.txt -size 200 200 -output scene_3.bmp
+
+test4:
+	./Assignment_4 -input ../data/scene04_axes.txt -size 200 200 -output scene_4.bmp
+
+test5:
+	./Assignment_4 -input ../data/scene05_bunny_1k.txt -size 64 64 -output scene_5.bmp
+
+test6:
+	./Assignment_4 -input ../data/scene06_shine.txt -size 200 200 -output scene_6.bmp
