@@ -30,14 +30,7 @@ public:
     /// TODO: implement this function for ray-sphere intersection test.
 	virtual bool intersect( const Ray& r , Hit& h , float tmin)
     {
-        
         vec3 radiusVector = vec3(radius, radius, radius);
-
-        // printVector("radiusVector", radiusVector);
-        // printVector("center", center);
-        // printVector("direction", r.getDirection());
-        // printVector("origin", r.getOrigin());
-        // cout << "tmin " << tmin << endl;
 
         // set up variables
         vec3 d = r.getDirection();
@@ -47,10 +40,12 @@ public:
         // set up for quadratic equations ( (-b +/- sqrt(b^2 - 4ac)) / 2a )
         float a = dot(d, d);
         float b = 2.0f * dot(d, (o - s));
-        float c = dot((o - s), (o - s)) - radius * radius;
+        float c = dot((o - s), (o - s)) - (radius * radius);
 
         // find determinant and solve quadratic equations
         float det = (b * b) - (4.0f * a * c);
+
+        bool isIntersected = false;
 
         // if det > 0, have 2 intersections
         if (det >= 0){
@@ -61,30 +56,18 @@ public:
                 vec3 pointOnSurface = r.pointAtParameter(t1); // returns o + td
                 vec3 normal = glm::normalize(pointOnSurface - center);
                 h.set(t1, material, normal);
-                return true;
+                isIntersected = true;
             }
             if(t2 > tmin && t2 < h.getT()){
                 // update h's ray to t, material, and normal
                 vec3 pointOnSurface = r.pointAtParameter(t2); // returns o + td
                 vec3 normal = glm::normalize(pointOnSurface - center);
                 h.set(t2, material, normal);
-                return true;
+                isIntersected = true;
             }
         }
 
-        // // if det == 0, have 1 intersection
-        // else if (det == 0){
-        //     float t1 = (- b + sqrt(det)) / (2.0f * a);
-        //     float t2 = (- b - sqrt(det)) / (2.0f * a);
-        //     return true;
-        // }
-
-        // if det < 0, no intersections
-        else {
-            return false;
-        }
-
-        return false;
+        return isIntersected; 
 	}
 
     void printVector(string title, vec3 vector ){
@@ -112,6 +95,14 @@ public:
 protected:
     vec3 center;
     float radius;
+
+    // This function is used to update the Hit using the ray parameter, t, the surface normal vector of the intersection point, and the object material
+    void updateHit(float rayParam, const Ray &r, Hit &h)
+    {
+        vec3 pointOnSurface = r.pointAtParameter(rayParam);
+        vec3 pointNormal = glm::normalize(pointOnSurface - this->center);
+        h.set(rayParam, this->material, pointNormal);
+    }
   
 
 };
