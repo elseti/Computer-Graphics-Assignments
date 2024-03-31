@@ -23,7 +23,19 @@ public:
     /// TODO: implement this function for ray-plane intersection test.
 	virtual bool intersect( const Ray& r , Hit& h , float tmin)
     {   
-        return false;   // remove this sentence in your implementation
+        vec3 n = normal;
+        vec3 o = r.getOrigin();
+
+        // equation, solve for t = (d - on) / nd
+        float t = (-d - dot(n, o)) / dot(n, r.getDirection()); 
+
+        if(t > tmin && t < h.getT())
+        {
+            h.set(t, material, normal);
+            return true;
+        }
+
+        return false;
 	}
 
 protected:

@@ -33,11 +33,11 @@ public:
         
         vec3 radiusVector = vec3(radius, radius, radius);
 
-        printVector("radiusVector", radiusVector);
-        printVector("center", center);
-        printVector("direction", r.getDirection());
-        printVector("origin", r.getOrigin());
-        cout << "tmin " << tmin << endl;
+        // printVector("radiusVector", radiusVector);
+        // printVector("center", center);
+        // printVector("direction", r.getDirection());
+        // printVector("origin", r.getOrigin());
+        // cout << "tmin " << tmin << endl;
 
         // set up variables
         vec3 d = r.getDirection();
