@@ -32,7 +32,31 @@ public:
     /// TODO: Implement this function to compute diffuse and specular components of Phong lighting 
     vec3 Shade( const Ray& ray, const Hit& hit, const vec3& dirToLight, const vec3& lightColor ) 
     {
-        return vec3(1, 1, 1); // remove this sentence in your implementation
+      vec3 totalVec = vec3(0.0f, 0.0f, 0.0f);
+      
+      vec3 normal = normalize(hit.getNormal());
+      
+      // calculate diffuse lighting
+      float diffuseIntensity = dot(normal, dirToLight);
+      vec3 diffuseVec = diffuseColor * diffuseIntensity * lightColor;
+
+      if(diffuseIntensity > 0){
+        totalVec += diffuseVec;
+      }
+
+      // calculate reflection using r = 2n(n.l)-l (l is light direction)
+      vec3 reflectionVec = 2.0f * normal * dot(normal, dirToLight) - dirToLight;
+
+      // calculate specular lighting and pow shininess
+      float specularIntensity = dot(-normalize(ray.getDirection()), reflectionVec);
+      vec3 specularVec = specularColor * pow(specularIntensity, shininess) * lightColor;
+
+      if(diffuseIntensity > 0 && specularIntensity > 0){
+        totalVec += specularVec;
+      }
+      
+      return totalVec;
+      
     }
 
     void loadTexture(const char * filename)
